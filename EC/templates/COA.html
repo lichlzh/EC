@@ -1,0 +1,38 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>调配构成表</title>
+	</head>
+
+	<body>
+		</br>
+		<textarea id="str" name="message" rows="10" cols="40" placeholder="父物料号 父物料名称 子物料号 子物料名称 构成数 配料提前期 供应商提前期"></textarea>
+		</br>
+		<input type="button" value="提交" onclick="test()"/>
+		<input type="button" value="返回" onclick="javascript:history.back(-1);"/>
+		<div id="res" style="color:red"> </div>
+	</body>
+
+	<SCRIPT LANGUAGE="JavaScript">
+	window.onload=function(){
+		var httpRequest = new XMLHttpRequest()
+		httpRequest.open('GET',"http://203.195.149.30:8000/kingofshops/getcoa",false)
+		httpRequest.send()
+		res=httpRequest.responseText
+		document.getElementById('res').innerHTML=res
+	}
+	function test(){
+		var s = document.getElementById("str").value
+		s = s.replace(/\r\n/g, '~')
+		s = s.replace(/\n/g, '~')
+		s = s.replace(/\s/g, ' ')
+		var httpRequest = new XMLHttpRequest()
+		httpRequest.open('GET',"http://203.195.149.30:8000/kingofshops/updcoa?str="+s,false)
+		httpRequest.send()
+		res=httpRequest.responseText
+		document.getElementById('res').innerHTML = res
+	}
+	</SCRIPT>
+
+</html>
+

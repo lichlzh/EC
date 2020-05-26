@@ -1,0 +1,27 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>便利店之王</title>
+	</head>
+
+	<body>
+
+		商品名称 <input type="text" id="name">
+		</br>
+		<input type="button" value="提交" onclick="test()"/>
+		<div id="res" style="color:red"> </div>
+	</body>
+
+	<SCRIPT LANGUAGE="JavaScript">
+	function test(){
+		var s = document.getElementById("name").value
+		var httpRequest = new XMLHttpRequest()
+		httpRequest.open('GET',"http://203.195.149.30:8000/kingofshops/recommend?name="+s,false)
+		httpRequest.send()
+		res=httpRequest.responseText
+		document.getElementById('res').innerHTML = res
+	}
+	</SCRIPT>
+
+</html>
+
