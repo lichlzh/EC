@@ -163,21 +163,23 @@ class CompareAble:
         if self.c<other.c:
             return 1
         return 0
-def bfs(st):
+def bfs(items):
     ret=''
     pq=[]
-    st[1]=int(st[1])
-    st[2]=datetime.date(*map(int,st[2].split('-')))
-    st.append(st[2])
-    m=Mas.objects.filter(name=st[0]).values()[0]
-    meth=0
-    if m['method']=='生产':
-        st[2]=st[2]-datetime.timedelta(days=m['leadtime'])
-    else:
-        meth=1
-        c=Coa.objects.filter(sname=st[0]).values()[0]
-        st[2]=st[2]-datetime.timedelta(days=c['cleadtime']+c['sleadtime'])
-    heapq.heappush(pq,CompareAble(st[0],st[1],st[2],st[3],meth))
+    for st in items:
+        st=st.split(' ')
+        st[1]=int(st[1])
+        st[2]=datetime.date(*map(int,st[2].split('-')))
+        st.append(st[2])
+        m=Mas.objects.filter(name=st[0]).values()[0]
+        meth=0
+        if m['method']=='生产':
+            st[2]=st[2]-datetime.timedelta(days=m['leadtime'])
+        else:
+            meth=1
+            c=Coa.objects.filter(sname=st[0]).values()[0]
+            st[2]=st[2]-datetime.timedelta(days=c['cleadtime']+c['sleadtime'])
+        heapq.heappush(pq,CompareAble(st[0],st[1],st[2],st[3],meth))
     while pq:
         tmp=heapq.heappop(pq)
         tmp=[tmp.a,tmp.b,tmp.c,tmp.d,tmp.e]
@@ -219,43 +221,6 @@ def bfs(st):
                 num=math.ceil(num*c['num']/(1-m['lossrate']))
             heapq.heappush(pq,CompareAble(c['sname'],num,date,tmp[2],meth))
     return ret
-    '''for i in range(tail,-1,-1):
-        s=Stock.objects.filter(name=que[i][0]).values()[0]
-        ostock,mstock=s['ostock'],s['mstock']
-        if que[i][1]<=ostock:
-            ostock-=que[i][1]
-            que[i][1]=0
-        else:
-            que[i][1]-=ostock
-            ostock=0
-
-        if que[i][1]<=mstock:
-            mstock-=que[i][1]
-            que[i][1]=0
-        else:
-            que[i][1]-=mstock
-            mstock=0
-        Stock.objects.filter(name=que[i][0]).update(ostock=ostock,mstock=mstock)
-        if que[i][1]==0:
-            que[i][2]=que[i][3]
-    ret=''
-    for i in range(0,tail+1):
-        nxt=Coa.objects.filter(fname=que[i][0]).values()
-        #print(nxt)
-        for c in nxt:
-            m=Mas.objects.filter(id=c['sid']).values()[0]
-            num,date=que[i][1],que[i][2]
-            #print(m)
-            if m['method']=='生产':
-                date=date-datetime.timedelta(days=m['leadtime'])
-            else:
-                date=date-datetime.timedelta(days=c['cleadtime']+c['sleadtime'])
-            que[i]=[c['sname'],num,date,tmp[2]]
-        m=Mas.objects.filter(name=que[i][0]).values()[0]
-        ret+=lzh(m['method'])+lzh(m['id'])+lzh(que[i][0])+lzh(que[i][1])+lzh(que[i][2])+lzh(que[i][3])+'</br>'
-    #print(ret)
-    return ret'''
-
     
 @csrf_exempt
 def compute(request):
@@ -269,8 +234,7 @@ def compute(request):
         if len(item)!=3:
             return HttpResponse('input format error')
     #print(items)
-    for item in items:
-        response+=bfs(item.split(' '))+'</br>'
+    response+=bfs(items)
     return HttpResponse(response)
     
     
